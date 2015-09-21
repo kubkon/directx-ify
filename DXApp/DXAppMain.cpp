@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Engine.h"
 
 using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::ApplicationModel::Core;
@@ -11,14 +12,16 @@ using namespace Platform;
 ref class DXApp sealed : public IFrameworkView
 {
 private:
-	bool windowClosed;
+	bool m_windowClosed;
+	Engine m_engine;
+
 public:
 	virtual void Initialize(CoreApplicationView^ applicationView)
 	{
 		applicationView->Activated += ref new TypedEventHandler
 			<CoreApplicationView^, IActivatedEventArgs^>(this, &DXApp::OnActivated);
 
-		windowClosed = false;
+		m_windowClosed = false;
 	}
 
 	virtual void SetWindow(CoreWindow^ window)
@@ -34,13 +37,17 @@ public:
 	
 	virtual void Run()
 	{
-		CoreWindow^ window = CoreWindow::GetForCurrentThread();
+		m_engine.Initialize();
 
-		while (!windowClosed)
+		auto window = CoreWindow::GetForCurrentThread();
+
+		while (!m_windowClosed)
 		{
 			window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-			// Run game code here...
+			// Run the graphics code here...
+			m_engine.Update();
+			m_engine.Render();
 		}
 	};
 	
@@ -48,7 +55,7 @@ public:
 
 	void OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 	{
-		CoreWindow^ window = CoreWindow::GetForCurrentThread();
+		auto window = CoreWindow::GetForCurrentThread();
 		window->Activate();
 	}
 
@@ -62,7 +69,7 @@ public:
 
 	void Closed(CoreWindow^ window, CoreWindowEventArgs^ args)
 	{
-		windowClosed = true;
+		m_windowClosed = true;
 	}
 };
 
