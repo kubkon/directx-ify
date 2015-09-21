@@ -10,17 +10,24 @@ using namespace Platform;
 
 ref class DXApp sealed : public IFrameworkView
 {
+private:
+	bool windowClosed;
 public:
 	virtual void Initialize(CoreApplicationView^ applicationView)
 	{
 		applicationView->Activated += ref new TypedEventHandler
 			<CoreApplicationView^, IActivatedEventArgs^>(this, &DXApp::OnActivated);
+
+		windowClosed = false;
 	}
 
 	virtual void SetWindow(CoreWindow^ window)
 	{
 		window->KeyDown += ref new TypedEventHandler
 			<CoreWindow^, KeyEventArgs^>(this, &DXApp::OnKeyDown);
+
+		window->Closed += ref new TypedEventHandler
+			<CoreWindow^, CoreWindowEventArgs^>(this, &DXApp::Closed);
 	}
 
 	virtual void Load(String^ entryPoint) {};
@@ -28,7 +35,13 @@ public:
 	virtual void Run()
 	{
 		CoreWindow^ window = CoreWindow::GetForCurrentThread();
-		window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
+
+		while (!windowClosed)
+		{
+			window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+			// Run game code here...
+		}
 	};
 	
 	virtual void Uninitialize() {};
@@ -43,9 +56,13 @@ public:
 	{
 		if (args->VirtualKey == VirtualKey::Escape)
 		{
-			MessageDialog dialog("You have pressed the Escape button!");
-			dialog.ShowAsync();
+			Closed(window, nullptr);
 		}
+	}
+
+	void Closed(CoreWindow^ window, CoreWindowEventArgs^ args)
+	{
+		windowClosed = true;
 	}
 };
 
