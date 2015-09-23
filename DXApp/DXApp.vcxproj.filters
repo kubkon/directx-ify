@@ -45,6 +45,7 @@
     <ClInclude Include="DXHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="DXAppMain.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">

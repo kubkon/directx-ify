@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "DXAppMain.h"
 #include "Engine.h"
 
 using namespace Windows::ApplicationModel::Activation;
@@ -9,78 +10,61 @@ using namespace Windows::UI::Popups;
 using namespace Windows::System;
 using namespace Platform;
 
-ref class DXApp sealed : public IFrameworkView
+void DXApp::Initialize(CoreApplicationView^ applicationView)
 {
-private:
-	bool m_windowClosed;
-	Engine m_engine;
+	applicationView->Activated += ref new TypedEventHandler
+		<CoreApplicationView^, IActivatedEventArgs^>(this, &DXApp::OnActivated);
 
-public:
-	virtual void Initialize(CoreApplicationView^ applicationView)
-	{
-		applicationView->Activated += ref new TypedEventHandler
-			<CoreApplicationView^, IActivatedEventArgs^>(this, &DXApp::OnActivated);
+	windowClosed_ = false;
+}
 
-		m_windowClosed = false;
-	}
+void DXApp::SetWindow(CoreWindow^ window)
+{
+	window->KeyDown += ref new TypedEventHandler
+		<CoreWindow^, KeyEventArgs^>(this, &DXApp::OnKeyDown);
 
-	virtual void SetWindow(CoreWindow^ window)
-	{
-		window->KeyDown += ref new TypedEventHandler
-			<CoreWindow^, KeyEventArgs^>(this, &DXApp::OnKeyDown);
+	window->Closed += ref new TypedEventHandler
+		<CoreWindow^, CoreWindowEventArgs^>(this, &DXApp::Closed);
+}
 
-		window->Closed += ref new TypedEventHandler
-			<CoreWindow^, CoreWindowEventArgs^>(this, &DXApp::Closed);
-	}
-
-	virtual void Load(String^ entryPoint) {};
+void DXApp::Load(String^ entryPoint) {};
 	
-	virtual void Run()
+void DXApp::Run()
+{
+	engine_.Initialize();
+
+	auto window = CoreWindow::GetForCurrentThread();
+
+	while (!windowClosed_)
 	{
-		m_engine.Initialize();
+		window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-		auto window = CoreWindow::GetForCurrentThread();
-
-		while (!m_windowClosed)
-		{
-			window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-
-			// Run the graphics code here...
-			m_engine.Update();
-			m_engine.Render();
-		}
-	};
-	
-	virtual void Uninitialize() {};
-
-	void OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
-	{
-		auto window = CoreWindow::GetForCurrentThread();
-		window->Activate();
-	}
-
-	void OnKeyDown(CoreWindow^ window, KeyEventArgs^ args)
-	{
-		if (args->VirtualKey == VirtualKey::Escape)
-		{
-			Closed(window, nullptr);
-		}
-	}
-
-	void Closed(CoreWindow^ window, CoreWindowEventArgs^ args)
-	{
-		m_windowClosed = true;
+		// Run the graphics code here...
+		engine_.Update();
+		engine_.Render();
 	}
 };
+	
+void DXApp::Uninitialize() {};
 
-ref class DXAppSource sealed : IFrameworkViewSource
+void DXApp::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
-public:
-	virtual IFrameworkView^ CreateView()
+	auto window = CoreWindow::GetForCurrentThread();
+	window->Activate();
+}
+
+void DXApp::OnKeyDown(CoreWindow^ window, KeyEventArgs^ args)
+{
+	if (args->VirtualKey == VirtualKey::Escape)
 	{
-		return ref new DXApp();
+		Closed(window, nullptr);
 	}
-};
+}
+
+void DXApp::Closed(CoreWindow^ window, CoreWindowEventArgs^ args)
+{
+	windowClosed_ = true;
+}
 
 [MTAThread]
 int main(Array<String^>^ args)

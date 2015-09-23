@@ -20,8 +20,8 @@ void Engine::Initialize()
 		&devContext
 		);
 	DXHelper::ThrowIfFailed(hr);
-	hr = device.As(&m_device);
-	hr = devContext.As(&m_devContext);
+	hr = device.As(&device_);
+	hr = devContext.As(&devContext_);
 }
 
 void Engine::Update()

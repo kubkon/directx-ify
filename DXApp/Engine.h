@@ -7,8 +7,9 @@ using namespace Windows::UI::Core;
 class Engine
 {
 private:
-	ComPtr<ID3D11Device1> m_device;
-	ComPtr<ID3D11DeviceContext1> m_devContext;
+	ComPtr<ID3D11Device1> device_;
+	ComPtr<ID3D11DeviceContext1> devContext_;
+	ComPtr<IDXGISwapChain1> swapChain_;
 
 public:
 	void Initialize();
