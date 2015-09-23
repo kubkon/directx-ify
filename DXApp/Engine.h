@@ -22,6 +22,8 @@ private:
 	void InitPipeline();
 	Array<byte>^ LoadShaderFile(std::string);
 
+	VERTEX triangle_[3];
+
 	ComPtr<ID3D11Device1> device_;
 	ComPtr<ID3D11DeviceContext1> devContext_;
 	ComPtr<IDXGISwapChain1> swapChain_;

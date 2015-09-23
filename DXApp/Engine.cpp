@@ -98,7 +98,7 @@ void Engine::Render()
 	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// draw...
-	devContext_->Draw(3, 0);
+	devContext_->Draw(ARRAYSIZE(triangle_), 0);
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
@@ -106,18 +106,23 @@ void Engine::Render()
 
 void Engine::InitGraphics()
 {
-	VERTEX verticesOfTriangle[] =
-	{
-		{ 0.0f, 0.5f, 0.0f },
-		{ 0.45f, -0.5f, 0.0f },
-		{ -0.45f, -0.5f, 0.0f },
-	};
+	triangle_[0].X = 0.0f;
+	triangle_[0].Y = 0.5f;
+	triangle_[0].Z = 0.0f;
+
+	triangle_[1].X = 0.45f;
+	triangle_[1].Y = -0.5f;
+	triangle_[1].Z = 0.0f;
+	
+	triangle_[2].X = -0.45f;
+	triangle_[2].Y = -0.5f;
+	triangle_[2].Z = 0.0f;
 
 	D3D11_BUFFER_DESC bd = { 0 };
-	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(verticesOfTriangle);
+	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangle_);
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-	D3D11_SUBRESOURCE_DATA srd = { verticesOfTriangle, 0, 0 };
+	D3D11_SUBRESOURCE_DATA srd = { triangle_, 0, 0 };
 
 	ThrowIfFailed(device_->CreateBuffer(&bd, &srd, &vertexBuffer_));
 }
