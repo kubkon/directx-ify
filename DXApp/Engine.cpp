@@ -11,11 +11,17 @@ void Engine::Initialize()
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> devContext;
 
+	UINT createDeviceFlags = 0;
+
+	#if defined(DEBUG) || defined(_DEBUG)
+		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	#endif
+
 	auto hr = D3D11CreateDevice(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		0,
+		createDeviceFlags,
 		nullptr,
 		0,
 		D3D11_SDK_VERSION,
@@ -95,10 +101,10 @@ void Engine::Render()
 		&offset);
 
 	// set the primitive topology
-	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// draw...
-	devContext_->Draw(ARRAYSIZE(triangle_), 0);
+	devContext_->Draw(ARRAYSIZE(triangles_), 0);
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
@@ -106,23 +112,23 @@ void Engine::Render()
 
 void Engine::InitGraphics()
 {
-	triangle_[0].X = 0.0f;
-	triangle_[0].Y = 0.5f;
-	triangle_[0].Z = 0.0f;
+	VERTEX v0 = { { 0.0f, 0.5f, 0.0f } };
+	VERTEX v1 = { { -0.45f, -0.5f, 0.0 } };
+	VERTEX v2 = { { 0.45f, -0.5f, 0.0 } };
+	VERTEX v3 = { { 0.45f, 0.5f, 0.0 } };
 
-	triangle_[1].X = 0.45f;
-	triangle_[1].Y = -0.5f;
-	triangle_[1].Z = 0.0f;
-	
-	triangle_[2].X = -0.45f;
-	triangle_[2].Y = -0.5f;
-	triangle_[2].Z = 0.0f;
+	triangles_[0] = v0;
+	triangles_[1] = v1;
+	triangles_[2] = v2;
+	triangles_[3] = v0;
+	triangles_[4] = v2;
+	triangles_[5] = v3;
 
 	D3D11_BUFFER_DESC bd = { 0 };
-	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangle_);
+	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangles_);
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-	D3D11_SUBRESOURCE_DATA srd = { triangle_, 0, 0 };
+	D3D11_SUBRESOURCE_DATA srd = { triangles_, 0, 0 };
 
 	ThrowIfFailed(device_->CreateBuffer(&bd, &srd, &vertexBuffer_));
 }

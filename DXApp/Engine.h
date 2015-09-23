@@ -1,14 +1,15 @@
 #pragma once
 #include "pch.h"
 
+using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace Windows::UI::Core;
 using namespace Platform;
 
-typedef struct VERTEX
+struct VERTEX
 {
-	float X, Y, Z;
-} VERTEX;
+	XMFLOAT3 Position;
+};
 
 class Engine
 {
@@ -22,7 +23,7 @@ private:
 	void InitPipeline();
 	Array<byte>^ LoadShaderFile(std::string);
 
-	VERTEX triangle_[3];
+	VERTEX triangles_[6];
 
 	ComPtr<ID3D11Device1> device_;
 	ComPtr<ID3D11DeviceContext1> devContext_;
