@@ -46,6 +46,13 @@ void Engine::Initialize()
 		&scd,
 		nullptr,
 		&swapChain_));
+
+	ComPtr<ID3D11Texture2D> backBuffer;
+	ThrowIfFailed(swapChain_->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBuffer));
+	ThrowIfFailed(device_->CreateRenderTargetView(
+		backBuffer.Get(),
+		nullptr,
+		&renderTarget_));
 }
 
 void Engine::Update()
@@ -55,5 +62,11 @@ void Engine::Update()
 
 void Engine::Render()
 {
+	devContext_->OMSetRenderTargets(1, renderTarget_.GetAddressOf(), nullptr);
+
+	// clear the back buffer to deep blue colour
+	float colour[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	devContext_->ClearRenderTargetView(renderTarget_.Get(), colour);
+
 	ThrowIfFailed(swapChain_->Present(1, 0));
 }
