@@ -112,10 +112,10 @@ void Engine::Render()
 
 void Engine::InitGraphics()
 {
-	VERTEX v0 = { { 0.0f, 0.5f, 0.0f } };
-	VERTEX v1 = { { -0.45f, -0.5f, 0.0 } };
-	VERTEX v2 = { { 0.45f, -0.5f, 0.0 } };
-	VERTEX v3 = { { 0.45f, 0.5f, 0.0 } };
+	VERTEX v0 = { { 0.0f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } };
+	VERTEX v1 = { { -0.45f, -0.5f, 0.0 }, { 0.0f, 1.0f, 0.0f } };
+	VERTEX v2 = { { 0.45f, -0.5f, 0.0 }, { 0.0f, 0.0f, 1.0f } };
+	VERTEX v3 = { { 0.45f, 0.5f, 0.0 }, { 0.0f, 0.0f, 0.0f } };
 
 	triangles_[0] = v0;
 	triangles_[1] = v1;
@@ -155,6 +155,7 @@ void Engine::InitPipeline()
 	D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	ThrowIfFailed(device_->CreateInputLayout(

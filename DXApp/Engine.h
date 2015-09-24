@@ -9,6 +9,7 @@ using namespace Platform;
 struct VERTEX
 {
 	XMFLOAT3 Position;
+	XMFLOAT3 Colour;
 };
 
 class Engine
