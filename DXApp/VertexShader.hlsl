@@ -1,7 +1,6 @@
 cbuffer ConstantBuffer
 {
-	float redLevel;
-	float blueLevel;
+	float3 offset;
 };
 
 struct VOut
@@ -14,9 +13,9 @@ VOut main( float4 pos : POSITION, float4 col : COLOR )
 {
 	VOut output;
 	output.position = pos;
-	output.position.xy *= 0.5f;
+	output.position.x += offset.x;
+	output.position.y += offset.y;
+	output.position.xy += offset.z;
 	output.colour = col;
-	output.colour.r *= redLevel;
-	output.colour.b *= blueLevel;
 	return output;
 }

@@ -104,8 +104,8 @@ void Engine::Render()
 	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// draw...
-	COLORMOD colors = { 0.5f, 0.5f };
-	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &colors, 0, 0);
+	XMFLOAT3 translate = { 0.0f, 0.25f, 0.0f };
+	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &translate, 0, 0);
 	devContext_->Draw(ARRAYSIZE(triangles_), 0);
 
 	// switch the buffers
