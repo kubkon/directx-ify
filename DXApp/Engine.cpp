@@ -104,6 +104,8 @@ void Engine::Render()
 	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// draw...
+	COLORMOD colors = { 0.5f, 0.5f };
+	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &colors, 0, 0);
 	devContext_->Draw(ARRAYSIZE(triangles_), 0);
 
 	// switch the buffers
@@ -131,6 +133,14 @@ void Engine::InitGraphics()
 	D3D11_SUBRESOURCE_DATA srd = { triangles_, 0, 0 };
 
 	ThrowIfFailed(device_->CreateBuffer(&bd, &srd, &vertexBuffer_));
+
+	bd = { 0 };
+	bd.ByteWidth = 16;
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.Usage = D3D11_USAGE_DEFAULT;
+
+	ThrowIfFailed(device_->CreateBuffer(&bd, nullptr, &constantBuffer_));
+	devContext_->VSSetConstantBuffers(0, 1, constantBuffer_.GetAddressOf());
 }
 
 void Engine::InitPipeline()

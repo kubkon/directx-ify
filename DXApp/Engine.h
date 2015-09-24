@@ -6,6 +6,11 @@ using namespace Microsoft::WRL;
 using namespace Windows::UI::Core;
 using namespace Platform;
 
+struct COLORMOD
+{
+	float RedLevel, BlueLevel;
+};
+
 struct VERTEX
 {
 	XMFLOAT3 Position;
@@ -34,4 +39,5 @@ private:
 	ComPtr<ID3D11VertexShader> vertexShader_;
 	ComPtr<ID3D11PixelShader> pixelShader_;
 	ComPtr<ID3D11InputLayout> inputLayout_;
+	ComPtr<ID3D11Buffer> constantBuffer_;
 };
