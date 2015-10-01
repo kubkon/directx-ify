@@ -1,6 +1,6 @@
 cbuffer ConstantBuffer
 {
-	float3 offset;
+	float4x4 transform;
 };
 
 struct VOut
@@ -12,10 +12,9 @@ struct VOut
 VOut main( float4 pos : POSITION, float4 col : COLOR ) 
 {
 	VOut output;
-	output.position = pos;
-	output.position.x += offset.x;
-	output.position.y += offset.y;
-	output.position.xy += offset.z;
+
+	output.position = mul(transform, pos);
 	output.colour = col;
+
 	return output;
 }

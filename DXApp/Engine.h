@@ -22,9 +22,13 @@ public:
 private:
 	void InitGraphics();
 	void InitPipeline();
+	XMMATRIX GetWorldTransform();
+	XMMATRIX GetViewTransform();
+	XMMATRIX GetProjectiveTransform();
 	Array<byte>^ LoadShaderFile(std::string);
 
 	VERTEX triangles_[6];
+	float time_;
 
 	ComPtr<ID3D11Device1> device_;
 	ComPtr<ID3D11DeviceContext1> devContext_;

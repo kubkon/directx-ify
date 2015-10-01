@@ -75,11 +75,14 @@ void Engine::Initialize()
 	// initialise graphics and pipeline
 	InitGraphics();
 	InitPipeline();
+
+	// initialise time
+	time_ = 0.0f;
 }
 
 void Engine::Update()
 {
-
+	time_ += 0.05f;
 }
 
 void Engine::Render()
@@ -104,8 +107,8 @@ void Engine::Render()
 	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// draw...
-	XMFLOAT3 translate = { 0.0f, 0.25f, 0.0f };
-	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &translate, 0, 0);
+	XMMATRIX transform = GetWorldTransform() * GetViewTransform() * GetProjectiveTransform();
+	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &transform, 0, 0);
 	devContext_->Draw(ARRAYSIZE(triangles_), 0);
 
 	// switch the buffers
@@ -117,14 +120,10 @@ void Engine::InitGraphics()
 	VERTEX v0 = { { 0.0f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } };
 	VERTEX v1 = { { -0.45f, -0.5f, 0.0 }, { 0.0f, 1.0f, 0.0f } };
 	VERTEX v2 = { { 0.45f, -0.5f, 0.0 }, { 0.0f, 0.0f, 1.0f } };
-	VERTEX v3 = { { 0.45f, 0.5f, 0.0 }, { 0.0f, 0.0f, 0.0f } };
 
 	triangles_[0] = v0;
 	triangles_[1] = v1;
 	triangles_[2] = v2;
-	triangles_[3] = v0;
-	triangles_[4] = v2;
-	triangles_[5] = v3;
 
 	D3D11_BUFFER_DESC bd = { 0 };
 	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangles_);
@@ -135,7 +134,7 @@ void Engine::InitGraphics()
 	ThrowIfFailed(device_->CreateBuffer(&bd, &srd, &vertexBuffer_));
 
 	bd = { 0 };
-	bd.ByteWidth = 16;
+	bd.ByteWidth = 4 * 16;
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 
@@ -176,6 +175,50 @@ void Engine::InitPipeline()
 		&inputLayout_));
 
 	devContext_->IASetInputLayout(inputLayout_.Get());
+}
+
+XMMATRIX Engine::GetWorldTransform()
+{
+	XMMATRIX scale, rotate;
+	float roll, pitch, yaw;
+
+	roll = XMConvertToRadians(time_);
+	pitch = XMConvertToRadians(0.0f);
+	yaw = XMConvertToRadians(0.0f);
+
+	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
+
+	return scale * rotate;
+}
+
+XMMATRIX Engine::GetViewTransform()
+{
+	XMVECTOR camPosition = XMVectorSet(1.5f, 0.5f, 1.5f, 0.0f);
+	XMVECTOR camLookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	return XMMatrixLookAtLH(camPosition, camLookAt, camUp);
+}
+
+XMMATRIX Engine::GetProjectiveTransform()
+{
+	float fovy, aspect, zn, zf;
+
+	// set the field of view angle
+	fovy = XMConvertToRadians(45.0f);
+	
+	// set the aspect ratio
+	CoreWindow^ window = CoreWindow::GetForCurrentThread();
+	aspect = window->Bounds.Width / window->Bounds.Height;
+
+	// set the near view plane
+	zn = 1.0f;
+
+	// set the far view plane
+	zf = 100.0f;
+
+	return XMMatrixPerspectiveFovLH(fovy, aspect, zn, zf);
 }
 
 Array<byte>^ Engine::LoadShaderFile(std::string file)
