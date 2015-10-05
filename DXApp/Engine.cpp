@@ -82,7 +82,7 @@ void Engine::Initialize()
 
 void Engine::Update()
 {
-	time_ += 0.05f;
+	time_ += 0.5f;
 }
 
 void Engine::Render()
@@ -104,7 +104,7 @@ void Engine::Render()
 		&offset);
 
 	// set the primitive topology
-	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// draw...
 	XMMATRIX transform = GetWorldTransform() * GetViewTransform() * GetProjectiveTransform();
@@ -124,6 +124,9 @@ void Engine::InitGraphics()
 	triangles_[0] = v0;
 	triangles_[1] = v1;
 	triangles_[2] = v2;
+	triangles_[3] = v2;
+	triangles_[4] = v1;
+	triangles_[5] = v0;
 
 	D3D11_BUFFER_DESC bd = { 0 };
 	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangles_);
@@ -182,8 +185,8 @@ XMMATRIX Engine::GetWorldTransform()
 	XMMATRIX scale, rotate;
 	float roll, pitch, yaw;
 
-	roll = XMConvertToRadians(time_);
-	pitch = XMConvertToRadians(0.0f);
+	roll = XMConvertToRadians(0.0f);
+	pitch = XMConvertToRadians(time_);
 	yaw = XMConvertToRadians(0.0f);
 
 	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
