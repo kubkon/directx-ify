@@ -107,9 +107,18 @@ void Engine::Render()
 	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// draw...
-	XMMATRIX transform = GetWorldTransform() * GetViewTransform() * GetProjectiveTransform();
+	FXMMATRIX world = GetWorldTransform();
+	CXMMATRIX view = GetViewTransform();
+	CXMMATRIX projection = GetProjectiveTransform();
+	XMMATRIX transform = world * view * projection;
 	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &transform, 0, 0);
-	devContext_->Draw(ARRAYSIZE(triangles_), 0);
+	shape_->Draw(
+		world,
+		view,
+		projection,
+		Colors::Gray,
+		nullptr,
+		true);
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
@@ -117,26 +126,9 @@ void Engine::Render()
 
 void Engine::InitGraphics()
 {
-	VERTEX v0 = { { 0.0f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } };
-	VERTEX v1 = { { -0.45f, -0.5f, 0.0 }, { 0.0f, 1.0f, 0.0f } };
-	VERTEX v2 = { { 0.45f, -0.5f, 0.0 }, { 0.0f, 0.0f, 1.0f } };
-
-	triangles_[0] = v0;
-	triangles_[1] = v1;
-	triangles_[2] = v2;
-	triangles_[3] = v2;
-	triangles_[4] = v1;
-	triangles_[5] = v0;
+	shape_ = GeometricPrimitive::CreateSphere(devContext_.Get(), 1.0f);
 
 	D3D11_BUFFER_DESC bd = { 0 };
-	bd.ByteWidth = sizeof(VERTEX) * ARRAYSIZE(triangles_);
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA srd = { triangles_, 0, 0 };
-
-	ThrowIfFailed(device_->CreateBuffer(&bd, &srd, &vertexBuffer_));
-
-	bd = { 0 };
 	bd.ByteWidth = 4 * 16;
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.Usage = D3D11_USAGE_DEFAULT;

@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "GeometricPrimitive.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -27,7 +28,7 @@ private:
 	XMMATRIX GetProjectiveTransform();
 	Array<byte>^ LoadShaderFile(std::string);
 
-	VERTEX triangles_[6];
+	std::unique_ptr<GeometricPrimitive> shape_;
 	float time_;
 
 	ComPtr<ID3D11Device1> device_;
