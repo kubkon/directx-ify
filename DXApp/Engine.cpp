@@ -115,6 +115,9 @@ void Engine::InitGraphics()
 {
 	shape_ = GeometricPrimitive::CreateSphere(devContext_.Get(), 1.0f);
 
+	// here, we are going to read in the STL file
+	model_ = Model::CreateFromSTL(device_.Get(), "liver.stl");
+
 	D3D11_BUFFER_DESC bd = { 0 };
 	bd.ByteWidth = 4 * 16;
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;

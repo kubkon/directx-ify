@@ -157,6 +157,10 @@ namespace DirectX
         static std::unique_ptr<Model> __cdecl CreateFromVBO( _In_ ID3D11Device* d3dDevice, _In_z_ const wchar_t* szFileName, 
                                                              _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr, bool ccw = false, bool pmalpha = false );
 
+		// Loads a model from an ASCII .STL file
+		static std::unique_ptr<Model> __cdecl CreateFromSTL( _In_ ID3D11Device* d3dDevice, _In_z_ const char* szFileName,
+															 _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr, bool ccw = false, bool pmalpha = false);
+
     private:
         std::set<IEffect*>  mEffectCache;
     };

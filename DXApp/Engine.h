@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "GeometricPrimitive.h"
+#include "Model.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -27,8 +28,10 @@ private:
 	XMMATRIX GetViewTransform();
 	XMMATRIX GetProjectiveTransform();
 	Array<byte>^ LoadShaderFile(std::string);
+	void CreateFromSTL(std::string);
 
 	std::unique_ptr<GeometricPrimitive> shape_;
+	std::unique_ptr<Model> model_;
 	float time_;
 
 	ComPtr<ID3D11Device1> device_;
