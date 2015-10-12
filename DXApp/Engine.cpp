@@ -93,19 +93,6 @@ void Engine::Render()
 	float colour[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	devContext_->ClearRenderTargetView(renderTarget_.Get(), colour);
 
-	// set the vertex buffer
-	UINT stride = sizeof(VERTEX);
-	UINT offset = 0;
-	devContext_->IASetVertexBuffers(
-		0,
-		1,
-		vertexBuffer_.GetAddressOf(),
-		&stride,
-		&offset);
-
-	// set the primitive topology
-	devContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	// draw...
 	FXMMATRIX world = GetWorldTransform();
 	CXMMATRIX view = GetViewTransform();

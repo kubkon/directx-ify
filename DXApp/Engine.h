@@ -35,7 +35,6 @@ private:
 	ComPtr<ID3D11DeviceContext1> devContext_;
 	ComPtr<IDXGISwapChain1> swapChain_;
 	ComPtr<ID3D11RenderTargetView> renderTarget_;
-	ComPtr<ID3D11Buffer> vertexBuffer_;
 	ComPtr<ID3D11VertexShader> vertexShader_;
 	ComPtr<ID3D11PixelShader> pixelShader_;
 	ComPtr<ID3D11InputLayout> inputLayout_;
