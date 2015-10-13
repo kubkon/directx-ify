@@ -96,13 +96,14 @@ void Engine::Render()
 	CXMMATRIX view = GetViewTransform();
 	CXMMATRIX projection = GetProjectiveTransform();
 	XMMATRIX transform = world * view * projection;
-	shape_->Draw(
+
+	CommonStates states(device_.Get());
+	model_->Draw(
+		devContext_.Get(),
+		states,
 		world,
 		view,
-		projection,
-		Colors::Gray,
-		nullptr,
-		true);
+		projection);
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
@@ -110,10 +111,8 @@ void Engine::Render()
 
 void Engine::InitGraphics()
 {
-	shape_ = GeometricPrimitive::CreateSphere(devContext_.Get(), 1.0f);
-
 	// here, we are going to read in the STL file
-	model_ = Model::CreateFromSTL(device_.Get(), "liver.stl");
+	model_ = Model::CreateFromSTL(device_.Get(), "cube.stl");
 }
 
 XMMATRIX Engine::GetWorldTransform()
@@ -125,7 +124,7 @@ XMMATRIX Engine::GetWorldTransform()
 	pitch = XMConvertToRadians(time_);
 	yaw = XMConvertToRadians(0.0f);
 
-	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	scale = XMMatrixScaling(.25f, .25f, .25f);
 	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
 
 	return scale * rotate;

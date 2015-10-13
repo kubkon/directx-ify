@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "GeometricPrimitive.h"
 #include "Model.h"
+#include "CommonStates.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -23,14 +23,10 @@ public:
 
 private:
 	void InitGraphics();
-	void InitPipeline();
 	XMMATRIX GetWorldTransform();
 	XMMATRIX GetViewTransform();
 	XMMATRIX GetProjectiveTransform();
-	Array<byte>^ LoadShaderFile(std::string);
-	void CreateFromSTL(std::string);
 
-	std::unique_ptr<GeometricPrimitive> shape_;
 	std::unique_ptr<Model> model_;
 	float time_;
 

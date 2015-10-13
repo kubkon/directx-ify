@@ -32,34 +32,6 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-void ParseSTLFile(const char* szFileName, std::vector<float>& vertices)
-{
-	// read in the contents of the stl file
-	std::ifstream file(szFileName, std::ios::in);
-	std::string line;
-	std::vector<std::string> splitV;
-
-	if (file.is_open())
-	{
-		while (std::getline(file, line))
-		{
-			if (boost::find_first(line, "vertex"))
-			{
-				boost::trim(line);
-				boost::split(
-					splitV,
-					line,
-					boost::is_any_of(" "),
-					boost::token_compress_on);
-				for (std::vector<std::string>::size_type i = 1; i != splitV.size(); i++)
-				{
-					vertices.push_back(boost::lexical_cast<float>(splitV[i]));
-				}
-			}
-		}
-		file.close();
-	}
-}
 
 //--------------------------------------------------------------------------------------
 // Shared VB input element description
@@ -72,10 +44,64 @@ static BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID 
     UNREFERENCED_PARAMETER(Parameter);
     UNREFERENCED_PARAMETER(lpContext);
 
-    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionColor::InputElements,
-                   VertexPositionColor::InputElements + VertexPositionColor::InputElementCount);
+    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormal::InputElements,
+                   VertexPositionNormal::InputElements + VertexPositionNormal::InputElementCount);
 
     return TRUE;
+}
+
+void ParseSTLFile(
+	const char* szFileName,
+	std::vector<VertexPositionNormal>& vertices,
+	std::vector<uint16_t>& indices)
+{
+	// read in the contents of the stl file
+	std::ifstream file(szFileName, std::ios::in);
+	std::string line;
+	std::vector<std::string> splitV;
+	VertexPositionNormal vertex;
+	uint16_t index = 0;
+
+	if (file.is_open())
+	{
+		while (std::getline(file, line))
+		{
+			if (boost::find_first(line, "normal"))
+			{
+				boost::trim(line);
+				boost::split(
+					splitV,
+					line,
+					boost::is_any_of(" "),
+					boost::token_compress_on);
+				vertex.normal.x = boost::lexical_cast<float>(splitV[2]);
+				vertex.normal.y = boost::lexical_cast<float>(splitV[3]);
+				vertex.normal.z = boost::lexical_cast<float>(splitV[4]);
+			}
+			else if (boost::find_first(line, "vertex"))
+			{
+				boost::trim(line);
+				boost::split(
+					splitV,
+					line,
+					boost::is_any_of(" "),
+					boost::token_compress_on);
+				vertex.position.x = boost::lexical_cast<float>(splitV[1]);
+				vertex.position.y = boost::lexical_cast<float>(splitV[2]);
+				vertex.position.z = boost::lexical_cast<float>(splitV[3]);
+
+				// store
+				vertices.push_back(vertex);
+				indices.push_back(index);
+				index++;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		file.close();
+	}
 }
 
 //--------------------------------------------------------------------------------------
@@ -83,102 +109,102 @@ _Use_decl_annotations_
 std::unique_ptr<Model> DirectX::Model::CreateFromSTL(ID3D11Device* d3dDevice, const char* szFileName,
                                                      std::shared_ptr<IEffect> ieffect, bool ccw, bool pmalpha)
 {
-	//// parse STL file
-	//std::vector<VertexPositionColor> vertices;
-	//ParseSTLFile(szFileName, vertices);
+	// parse STL file
+	std::vector<VertexPositionNormal> vertsV;
+	std::vector<uint16_t> indicesV;
+	ParseSTLFile(szFileName, vertsV, indicesV);
 
-	//// create vertex and index buffers
- //   size_t vertSize = sizeof(VertexPositionColor) * vertices.size;
-	//auto numVertices = 0;
-	//auto verts = &vertices[0];
+	// create vertex and index buffers
+	auto numVertices = vertsV.size();
+	size_t vertSize = sizeof(VertexPositionNormal) * numVertices;
+	auto verts = &vertsV[0];
 
- //   size_t indexSize = sizeof(uint16_t) * header->numIndices;
-	//auto numIndices = 0;
- //   auto indices = reinterpret_cast<const uint16_t*>( meshData + sizeof(VBO::header_t) + vertSize );
+	auto numIndices = indicesV.size();
+	size_t indexSize = sizeof(uint16_t) * numIndices;
+	auto indices = &indicesV[0];
 
- //   // Create vertex buffer
- //   ComPtr<ID3D11Buffer> vb;
- //   {
- //       D3D11_BUFFER_DESC desc = { 0 };
- //       desc.Usage = D3D11_USAGE_DEFAULT;
- //       desc.ByteWidth = static_cast<UINT>(vertSize);
- //       desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    // Create vertex buffer
+    ComPtr<ID3D11Buffer> vb;
+    {
+        D3D11_BUFFER_DESC desc = { 0 };
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth = static_cast<UINT>(vertSize);
+        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
- //       D3D11_SUBRESOURCE_DATA initData = { 0 };
- //       initData.pSysMem = verts;
+        D3D11_SUBRESOURCE_DATA initData = { 0 };
+        initData.pSysMem = verts;
 
- //       ThrowIfFailed(
- //           d3dDevice->CreateBuffer(&desc, &initData, vb.GetAddressOf())
- //           );
+        ThrowIfFailed(
+            d3dDevice->CreateBuffer(&desc, &initData, vb.GetAddressOf())
+            );
 
- //       SetDebugObjectName(vb.Get(), "ModelSTL");
- //   }
+        SetDebugObjectName(vb.Get(), "ModelSTL");
+    }
 
- //   // Create index buffer
- //   ComPtr<ID3D11Buffer> ib;
- //   {
- //       D3D11_BUFFER_DESC desc = { 0 };
- //       desc.Usage = D3D11_USAGE_DEFAULT;
- //       desc.ByteWidth = static_cast<UINT>(indexSize);
- //       desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    // Create index buffer
+    ComPtr<ID3D11Buffer> ib;
+    {
+        D3D11_BUFFER_DESC desc = { 0 };
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth = static_cast<UINT>(indexSize);
+        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
- //       D3D11_SUBRESOURCE_DATA initData = { 0 };
- //       initData.pSysMem = indices;
+        D3D11_SUBRESOURCE_DATA initData = { 0 };
+        initData.pSysMem = indices;
 
- //       ThrowIfFailed(
- //           d3dDevice->CreateBuffer(&desc, &initData, ib.GetAddressOf())
- //           );
+        ThrowIfFailed(
+            d3dDevice->CreateBuffer(&desc, &initData, ib.GetAddressOf())
+            );
 
- //       SetDebugObjectName(ib.Get(), "ModelSTL");
- //   }
+        SetDebugObjectName(ib.Get(), "ModelSTL");
+    }
 
- //   // Create input layout and effect
- //   if (!ieffect)
- //   {
- //       auto effect = std::make_shared<BasicEffect>(d3dDevice);
- //       effect->EnableDefaultLighting();
- //       effect->SetLightingEnabled(true);
+    // Create input layout and effect
+    if (!ieffect)
+    {
+        auto effect = std::make_shared<BasicEffect>(d3dDevice);
+        effect->EnableDefaultLighting();
+        effect->SetLightingEnabled(true);
 
- //       ieffect = effect;
- //   }
+        ieffect = effect;
+    }
 
- //   ComPtr<ID3D11InputLayout> il;
- //   {
- //       void const* shaderByteCode;
- //       size_t byteCodeLength;
+    ComPtr<ID3D11InputLayout> il;
+    {
+        void const* shaderByteCode;
+        size_t byteCodeLength;
 
- //       ieffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+        ieffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
- //       ThrowIfFailed(
- //           d3dDevice->CreateInputLayout(VertexPositionNormalTexture::InputElements,
- //           VertexPositionNormalTexture::InputElementCount,
- //           shaderByteCode, byteCodeLength,
- //           il.GetAddressOf()));
+        ThrowIfFailed(
+            d3dDevice->CreateInputLayout(VertexPositionNormal::InputElements,
+            VertexPositionNormal::InputElementCount,
+            shaderByteCode, byteCodeLength,
+            il.GetAddressOf()));
 
- //       SetDebugObjectName(il.Get(), "ModelVBO");
- //   }
+        SetDebugObjectName(il.Get(), "ModelSTL");
+    }
 
- //   auto part = new ModelMeshPart();
- //   part->indexCount = numIndices;
- //   part->startIndex = 0;
- //   part->vertexStride = static_cast<UINT>( sizeof(VertexPositionColor) );
- //   part->inputLayout = il;
- //   part->indexBuffer = ib;
- //   part->vertexBuffer = vb;
- //   part->effect = ieffect;
- //   part->vbDecl = g_vbdecl;
+    auto part = new ModelMeshPart();
+    part->indexCount = numIndices;
+    part->startIndex = 0;
+    part->vertexStride = static_cast<UINT>( sizeof(VertexPositionNormal) );
+    part->inputLayout = il;
+    part->indexBuffer = ib;
+    part->vertexBuffer = vb;
+    part->effect = ieffect;
+    part->vbDecl = g_vbdecl;
 
- //   auto mesh = std::make_shared<ModelMesh>();
- //   mesh->ccw = ccw;
- //   mesh->pmalpha = pmalpha;
- //   BoundingSphere::CreateFromPoints(mesh->boundingSphere, numVertices, &verts->position, sizeof(VertexPositionColor));
- //   BoundingBox::CreateFromPoints(mesh->boundingBox, numVertices, &verts->position, sizeof(VertexPositionColor));
- //   mesh->meshParts.emplace_back(part);
+    auto mesh = std::make_shared<ModelMesh>();
+    mesh->ccw = ccw;
+    mesh->pmalpha = pmalpha;
+    BoundingSphere::CreateFromPoints(mesh->boundingSphere, numVertices, &verts->position, sizeof(VertexPositionNormal));
+    BoundingBox::CreateFromPoints(mesh->boundingBox, numVertices, &verts->position, sizeof(VertexPositionNormal));
+    mesh->meshParts.emplace_back(part);
 
- //   std::unique_ptr<Model> model(new Model());
- //   model->meshes.emplace_back(mesh);
- //
- //   return model;
-
-    return nullptr;
+    std::unique_ptr<Model> model(new Model());
+    model->meshes.emplace_back(mesh);
+ 
+    return model;
 }
+
