@@ -58,42 +58,52 @@ void ParseSTLFile(
 	// read in the contents of the stl file
 	std::ifstream file(szFileName, std::ios::in);
 	std::string line;
-	std::vector<std::string> splitV;
-	VertexPositionNormal vertex;
 	uint16_t index = 0;
 	uint16_t rhIndices[3];
+	XMVECTOR pos, normal;
+
+	std::string searchPhrases[2] = { "normal", "vertex" };
+	size_t found;
+
+	auto parseStringToXMVector = [](std::string line)
+	{
+		std::vector<std::string> splitV;
+		XMVECTOR vec = {};
+		boost::trim(line);
+		boost::split(
+			splitV,
+			line,
+			boost::is_any_of(" "),
+			boost::token_compress_on);
+
+		return XMVectorSet(
+			boost::lexical_cast<float>(splitV[0]),
+			boost::lexical_cast<float>(splitV[1]),
+			boost::lexical_cast<float>(splitV[2]),
+			0.0f);
+	};
 
 	if (file.is_open())
 	{
 		while (std::getline(file, line))
 		{
-			if (boost::find_first(line, "normal"))
+			found = line.find(searchPhrases[0]);
+			if (found != std::string::npos)
 			{
-				boost::trim(line);
-				boost::split(
-					splitV,
-					line,
-					boost::is_any_of(" "),
-					boost::token_compress_on);
-				vertex.normal.x = boost::lexical_cast<float>(splitV[2]);
-				vertex.normal.y = boost::lexical_cast<float>(splitV[3]);
-				vertex.normal.z = boost::lexical_cast<float>(splitV[4]);
+				line.erase(0, searchPhrases[0].size() + found);
+				normal = parseStringToXMVector(line);
 
 				std::getline(file, line);
 
 				for (int i = 0; i < 3; i++)
 				{
 					std::getline(file, line);
-					boost::trim(line);
-					boost::split(
-						splitV,
-						line,
-						boost::is_any_of(" "),
-						boost::token_compress_on);
-					vertex.position.x = boost::lexical_cast<float>(splitV[1]);
-					vertex.position.y = boost::lexical_cast<float>(splitV[2]);
-					vertex.position.z = boost::lexical_cast<float>(splitV[3]);
-					vertices.push_back(vertex);
+					found = line.find(searchPhrases[1]);
+					line.erase(0, searchPhrases[1].size() + found);
+					
+					pos = parseStringToXMVector(line);
+
+					vertices.push_back(VertexPositionNormal(pos, normal));
 					rhIndices[i] = index;
 					index++;
 				}
