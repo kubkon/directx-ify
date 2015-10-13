@@ -58,12 +58,13 @@ void ParseSTLFile(
 	// read in the contents of the stl file
 	std::ifstream file(szFileName, std::ios::in);
 	std::string line;
-	uint16_t index = 0;
-	uint16_t rhIndices[3];
-	XMVECTOR pos, normal;
-
 	std::string searchPhrases[2] = { "normal", "vertex" };
-	size_t found;
+
+	// temp storage
+	VertexPositionNormal rhTriangle[3] = {};
+	uint16_t counter = 0;
+	uint16_t index = 0;
+	XMVECTOR pos, normal;
 
 	auto parseStringToXMVector = [](std::string line)
 	{
@@ -87,32 +88,31 @@ void ParseSTLFile(
 	{
 		while (std::getline(file, line))
 		{
-			found = line.find(searchPhrases[0]);
-			if (found != std::string::npos)
+			if (boost::find_first(line, searchPhrases[0]))
 			{
-				line.erase(0, searchPhrases[0].size() + found);
+				line.erase(0, searchPhrases[0].size() + line.find(searchPhrases[0]));
 				normal = parseStringToXMVector(line);
+			}
 
-				std::getline(file, line);
+			if (boost::find_first(line, searchPhrases[1]))
+			{
+				line.erase(0, searchPhrases[1].size() + line.find(searchPhrases[1]));
+				pos = parseStringToXMVector(line);
 
-				for (int i = 0; i < 3; i++)
-				{
-					std::getline(file, line);
-					found = line.find(searchPhrases[1]);
-					line.erase(0, searchPhrases[1].size() + found);
-					
-					pos = parseStringToXMVector(line);
+				// create Vertex
+				rhTriangle[counter++] = VertexPositionNormal(pos, normal);
+				indices.push_back(index++);
+			}
 
-					vertices.push_back(VertexPositionNormal(pos, normal));
-					rhIndices[i] = index;
-					index++;
-				}
-
-				indices.push_back(rhIndices[0]);
-				indices.push_back(rhIndices[2]);
-				indices.push_back(rhIndices[1]);
+			if (counter > 2)
+			{
+				vertices.push_back(rhTriangle[0]);
+				vertices.push_back(rhTriangle[2]);
+				vertices.push_back(rhTriangle[1]);
+				counter = 0;
 			}
 		}
+
 		file.close();
 	}
 }
