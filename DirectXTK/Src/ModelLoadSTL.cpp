@@ -61,6 +61,7 @@ void ParseSTLFile(
 	std::vector<std::string> splitV;
 	VertexPositionNormal vertex;
 	uint16_t index = 0;
+	uint16_t rhIndices[3];
 
 	if (file.is_open())
 	{
@@ -77,27 +78,29 @@ void ParseSTLFile(
 				vertex.normal.x = boost::lexical_cast<float>(splitV[2]);
 				vertex.normal.y = boost::lexical_cast<float>(splitV[3]);
 				vertex.normal.z = boost::lexical_cast<float>(splitV[4]);
-			}
-			else if (boost::find_first(line, "vertex"))
-			{
-				boost::trim(line);
-				boost::split(
-					splitV,
-					line,
-					boost::is_any_of(" "),
-					boost::token_compress_on);
-				vertex.position.x = boost::lexical_cast<float>(splitV[1]);
-				vertex.position.y = boost::lexical_cast<float>(splitV[2]);
-				vertex.position.z = boost::lexical_cast<float>(splitV[3]);
 
-				// store
-				vertices.push_back(vertex);
-				indices.push_back(index);
-				index++;
-			}
-			else
-			{
-				continue;
+				std::getline(file, line);
+
+				for (int i = 0; i < 3; i++)
+				{
+					std::getline(file, line);
+					boost::trim(line);
+					boost::split(
+						splitV,
+						line,
+						boost::is_any_of(" "),
+						boost::token_compress_on);
+					vertex.position.x = boost::lexical_cast<float>(splitV[1]);
+					vertex.position.y = boost::lexical_cast<float>(splitV[2]);
+					vertex.position.z = boost::lexical_cast<float>(splitV[3]);
+					vertices.push_back(vertex);
+					rhIndices[i] = index;
+					index++;
+				}
+
+				indices.push_back(rhIndices[0]);
+				indices.push_back(rhIndices[2]);
+				indices.push_back(rhIndices[1]);
 			}
 		}
 		file.close();

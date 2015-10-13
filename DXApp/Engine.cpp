@@ -103,7 +103,8 @@ void Engine::Render()
 		states,
 		world,
 		view,
-		projection);
+		projection,
+		true);
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
@@ -112,27 +113,31 @@ void Engine::Render()
 void Engine::InitGraphics()
 {
 	// here, we are going to read in the STL file
-	model_ = Model::CreateFromSTL(device_.Get(), "cube.stl");
+	model_ = Model::CreateFromSTL(device_.Get(), "torus.stl");
 }
 
 XMMATRIX Engine::GetWorldTransform()
 {
-	XMMATRIX scale, rotate;
+	XMMATRIX scale, rotate, world;
 	float roll, pitch, yaw;
 
 	roll = XMConvertToRadians(0.0f);
 	pitch = XMConvertToRadians(time_);
 	yaw = XMConvertToRadians(0.0f);
 
-	scale = XMMatrixScaling(.25f, .25f, .25f);
+	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
 
-	return scale * rotate;
+	// adjust for RH model
+	world = scale * rotate;
+	world.r[2] *= -1.0f;
+
+	return world;
 }
 
 XMMATRIX Engine::GetViewTransform()
 {
-	XMVECTOR camPosition = XMVectorSet(1.5f, 0.5f, 1.5f, 0.0f);
+	XMVECTOR camPosition = XMVectorSet(1.5f, 1.5f, 10.0f, 0.0f);
 	XMVECTOR camLookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -154,7 +159,7 @@ XMMATRIX Engine::GetProjectiveTransform()
 	zn = 1.0f;
 
 	// set the far view plane
-	zf = 100.0f;
+	zf = 1000.0f;
 
 	return XMMatrixPerspectiveFovLH(fovy, aspect, zn, zf);
 }
