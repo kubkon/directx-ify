@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Engine.h"
 #include "DXHelper.h"
-#include <fstream>
 
 using DXHelper::ThrowIfFailed;
 
@@ -72,9 +71,8 @@ void Engine::Initialize()
 	viewport.Height = window->Bounds.Height;
 	devContext_->RSSetViewports(1, &viewport);
 
-	// initialise graphics and pipeline
+	// initialise graphics
 	InitGraphics();
-	InitPipeline();
 
 	// initialise time
 	time_ = 0.0f;
@@ -98,7 +96,6 @@ void Engine::Render()
 	CXMMATRIX view = GetViewTransform();
 	CXMMATRIX projection = GetProjectiveTransform();
 	XMMATRIX transform = world * view * projection;
-	devContext_->UpdateSubresource(constantBuffer_.Get(), 0, 0, &transform, 0, 0);
 	shape_->Draw(
 		world,
 		view,
@@ -117,49 +114,6 @@ void Engine::InitGraphics()
 
 	// here, we are going to read in the STL file
 	model_ = Model::CreateFromSTL(device_.Get(), "liver.stl");
-
-	D3D11_BUFFER_DESC bd = { 0 };
-	bd.ByteWidth = 4 * 16;
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-
-	ThrowIfFailed(device_->CreateBuffer(&bd, nullptr, &constantBuffer_));
-	devContext_->VSSetConstantBuffers(0, 1, constantBuffer_.GetAddressOf());
-}
-
-void Engine::InitPipeline()
-{
-	Array<byte>^ vsFile = LoadShaderFile("VertexShader.cso");
-	Array<byte>^ psFile = LoadShaderFile("PixelShader.cso");
-
-	ThrowIfFailed(device_->CreateVertexShader(
-		vsFile->Data,
-		vsFile->Length,
-		nullptr,
-		&vertexShader_));
-	ThrowIfFailed(device_->CreatePixelShader(
-		psFile->Data,
-		psFile->Length,
-		nullptr,
-		&pixelShader_));
-
-	devContext_->VSSetShader(vertexShader_.Get(), nullptr, 0);
-	devContext_->PSSetShader(pixelShader_.Get(), nullptr, 0);
-
-	D3D11_INPUT_ELEMENT_DESC ied[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	ThrowIfFailed(device_->CreateInputLayout(
-		ied,
-		ARRAYSIZE(ied),
-		vsFile->Data,
-		vsFile->Length,
-		&inputLayout_));
-
-	devContext_->IASetInputLayout(inputLayout_.Get());
 }
 
 XMMATRIX Engine::GetWorldTransform()
@@ -204,28 +158,4 @@ XMMATRIX Engine::GetProjectiveTransform()
 	zf = 100.0f;
 
 	return XMMatrixPerspectiveFovLH(fovy, aspect, zn, zf);
-}
-
-Array<byte>^ Engine::LoadShaderFile(std::string file)
-{
-	Array<byte>^ fileData = nullptr;
-
-	// open file
-	std::ifstream vertexFile(
-		file,
-		std::ios::in | std::ios::binary | std::ios::ate);
-
-	if (vertexFile.is_open())
-	{
-		// get the length of the file
-		int length = (int)vertexFile.tellg();
-
-		// collect the file data
-		fileData = ref new Array<byte>(length);
-		vertexFile.seekg(0, std::ios::beg);
-		vertexFile.read(reinterpret_cast<char*>(fileData->Data), length);
-		vertexFile.close();
-	}
-
-	return fileData;
 }
