@@ -18,6 +18,7 @@ public:
 	virtual void Uninitialize();
 	void OnActivated(CoreApplicationView^, IActivatedEventArgs^);
 	void OnKeyDown(CoreWindow^, KeyEventArgs^);
+	void OnPointerWheelChanged(CoreWindow^, PointerEventArgs^);
 	void Closed(CoreWindow^, CoreWindowEventArgs^);
 
 private:

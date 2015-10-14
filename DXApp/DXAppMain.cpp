@@ -23,6 +23,9 @@ void DXApp::SetWindow(CoreWindow^ window)
 	window->KeyDown += ref new TypedEventHandler
 		<CoreWindow^, KeyEventArgs^>(this, &DXApp::OnKeyDown);
 
+	window->PointerWheelChanged += ref new TypedEventHandler
+		<CoreWindow^, PointerEventArgs^>(this, &DXApp::OnPointerWheelChanged);
+
 	window->Closed += ref new TypedEventHandler
 		<CoreWindow^, CoreWindowEventArgs^>(this, &DXApp::Closed);
 }
@@ -74,6 +77,19 @@ void DXApp::OnKeyDown(CoreWindow^ window, KeyEventArgs^ args)
 	else if (args->VirtualKey == VirtualKey::D)
 	{
 		engine_.MoveCamera(Engine::MoveDirection::Right);
+	}
+}
+
+void DXApp::OnPointerWheelChanged(CoreWindow^ window, PointerEventArgs^ args)
+{
+	auto wheelData = args->CurrentPoint->Properties->MouseWheelDelta;
+	if (wheelData > 0)
+	{
+		engine_.MoveCamera(Engine::MoveDirection::Forward);
+	}
+	else // wheelData < 0
+	{
+		engine_.MoveCamera(Engine::MoveDirection::Backward);
 	}
 }
 
