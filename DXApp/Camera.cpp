@@ -20,7 +20,8 @@ std::unique_ptr<Camera> Camera::CreateCamera()
 void Camera::SetLens(float fovY, float aspect, float zn, float zf)
 {
 
-	proj_ = XMMatrixPerspectiveFovLH(fovY, aspect, zn, zf);
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(fovY, aspect, zn, zf);
+	XMStoreFloat4x4(&proj_, proj);
 }
 
 void Camera::UpdateViewMatrix()
@@ -30,15 +31,16 @@ void Camera::UpdateViewMatrix()
 	XMVECTOR camLookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	view_ = XMMatrixLookAtLH(camPosition, camLookAt, camUp);
+	XMMATRIX view = XMMatrixLookAtLH(camPosition, camLookAt, camUp);
+	XMStoreFloat4x4(&view_, view);
 }
 
 XMMATRIX Camera::View() const
 {
-	return view_;
+	return XMLoadFloat4x4(&view_);
 }
 
 XMMATRIX Camera::Proj() const
 {
-	return proj_;
+	return XMLoadFloat4x4(&proj_);
 }

@@ -22,6 +22,7 @@ public:
 	void Update();
 	void Render();
 
+	XMMATRIX World() const;
 	void SetWorldMatrix(float, float, float);
 
 private:
@@ -29,7 +30,7 @@ private:
 
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Camera> camera_;
-	XMMATRIX world_;
+	XMFLOAT4X4 world_;
 	float time_;
 
 	ComPtr<ID3D11Device1> device_;

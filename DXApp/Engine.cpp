@@ -109,7 +109,7 @@ void Engine::Render()
 	model_->Draw(
 		devContext_.Get(),
 		states,
-		world_,
+		World(),
 		camera_->View(),
 		camera_->Proj(),
 		true);
@@ -124,13 +124,20 @@ void Engine::InitGraphics()
 	model_ = Model::CreateFromSTL(device_.Get(), "torus.stl");
 }
 
+XMMATRIX Engine::World() const
+{
+	return XMLoadFloat4x4(&world_);
+}
+
 void Engine::SetWorldMatrix(float roll, float pitch, float yaw)
 {
-	XMMATRIX scale, rotate;
+	XMMATRIX scale, rotate, world;
 	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
 
 	// adjust for RH model
-	world_ = scale * rotate;
-	world_.r[2] *= -1.0f;
+	world = scale * rotate;
+	world.r[2] *= -1.0f;
+
+	XMStoreFloat4x4(&world_, world);
 }

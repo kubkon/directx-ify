@@ -23,6 +23,6 @@ public:
 private:
 	Camera();
 
-	XMMATRIX view_;
-	XMMATRIX proj_;
+	XMFLOAT4X4 view_;
+	XMFLOAT4X4 proj_;
 };
