@@ -69,7 +69,6 @@ void ParseSTLFile(
 	auto parseStringToXMVector = [](std::string line)
 	{
 		std::vector<std::string> splitV;
-		XMVECTOR vec = {};
 		boost::trim(line);
 		boost::split(
 			splitV,

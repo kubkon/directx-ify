@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Camera.h"
 #include "Model.h"
 #include "CommonStates.h"
 
@@ -21,13 +22,14 @@ public:
 	void Update();
 	void Render();
 
+	void SetWorldMatrix(float, float, float);
+
 private:
 	void InitGraphics();
-	XMMATRIX GetWorldTransform();
-	XMMATRIX GetViewTransform();
-	XMMATRIX GetProjectiveTransform();
 
 	std::unique_ptr<Model> model_;
+	std::unique_ptr<Camera> camera_;
+	XMMATRIX world_;
 	float time_;
 
 	ComPtr<ID3D11Device1> device_;

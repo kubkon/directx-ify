@@ -74,6 +74,18 @@ void Engine::Initialize()
 	// initialise graphics
 	InitGraphics();
 
+	// initialise camera
+	camera_ = Camera::CreateCamera();
+	camera_->SetLens(
+		XMConvertToRadians(45.0f),
+		window->Bounds.Width / window->Bounds.Height,
+		1.0f,
+		1000.0f);
+	camera_->UpdateViewMatrix();
+
+	// initialise world transform
+	SetWorldMatrix(0.0f, 0.0f, 0.0f);
+
 	// initialise time
 	time_ = 0.0f;
 }
@@ -81,6 +93,7 @@ void Engine::Initialize()
 void Engine::Update()
 {
 	time_ += 0.5f;
+	SetWorldMatrix(0.0f, XMConvertToRadians(time_), 0.0f);
 }
 
 void Engine::Render()
@@ -92,18 +105,13 @@ void Engine::Render()
 	devContext_->ClearRenderTargetView(renderTarget_.Get(), colour);
 
 	// draw...
-	FXMMATRIX world = GetWorldTransform();
-	CXMMATRIX view = GetViewTransform();
-	CXMMATRIX projection = GetProjectiveTransform();
-	XMMATRIX transform = world * view * projection;
-
 	CommonStates states(device_.Get());
 	model_->Draw(
 		devContext_.Get(),
 		states,
-		world,
-		view,
-		projection,
+		world_,
+		camera_->View(),
+		camera_->Proj(),
 		true);
 
 	// switch the buffers
@@ -116,50 +124,13 @@ void Engine::InitGraphics()
 	model_ = Model::CreateFromSTL(device_.Get(), "torus.stl");
 }
 
-XMMATRIX Engine::GetWorldTransform()
+void Engine::SetWorldMatrix(float roll, float pitch, float yaw)
 {
-	XMMATRIX scale, rotate, world;
-	float roll, pitch, yaw;
-
-	roll = XMConvertToRadians(0.0f);
-	pitch = XMConvertToRadians(time_);
-	yaw = XMConvertToRadians(0.0f);
-
+	XMMATRIX scale, rotate;
 	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
 
 	// adjust for RH model
-	world = scale * rotate;
-	world.r[2] *= -1.0f;
-
-	return world;
-}
-
-XMMATRIX Engine::GetViewTransform()
-{
-	XMVECTOR camPosition = XMVectorSet(1.5f, 1.5f, 10.0f, 0.0f);
-	XMVECTOR camLookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	return XMMatrixLookAtLH(camPosition, camLookAt, camUp);
-}
-
-XMMATRIX Engine::GetProjectiveTransform()
-{
-	float fovy, aspect, zn, zf;
-
-	// set the field of view angle
-	fovy = XMConvertToRadians(45.0f);
-	
-	// set the aspect ratio
-	CoreWindow^ window = CoreWindow::GetForCurrentThread();
-	aspect = window->Bounds.Width / window->Bounds.Height;
-
-	// set the near view plane
-	zn = 1.0f;
-
-	// set the far view plane
-	zf = 1000.0f;
-
-	return XMMatrixPerspectiveFovLH(fovy, aspect, zn, zf);
+	world_ = scale * rotate;
+	world_.r[2] *= -1.0f;
 }
