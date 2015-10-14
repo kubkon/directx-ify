@@ -19,10 +19,16 @@ public:
 	void OnActivated(CoreApplicationView^, IActivatedEventArgs^);
 	void OnKeyDown(CoreWindow^, KeyEventArgs^);
 	void OnPointerWheelChanged(CoreWindow^, PointerEventArgs^);
+	void OnPointerPressed(CoreWindow^, PointerEventArgs^);
+	void OnPointerReleased(CoreWindow^, PointerEventArgs^);
+	void OnPointerMoved(CoreWindow^, PointerEventArgs^);
 	void Closed(CoreWindow^, CoreWindowEventArgs^);
 
 private:
 	bool windowClosed_;
+	bool pointerPressed_;
+	float lastPointerPosX_;
+	float lastPointerPosY_;
 	Engine engine_;
 };
 

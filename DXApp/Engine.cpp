@@ -165,3 +165,9 @@ void Engine::MoveCamera(MoveDirection direction)
 		camera_->Strafe(MOVE_DISTANCE);
 	}
 }
+
+void Engine::RotateCamera(float dx, float dy)
+{
+	camera_->Pitch(XMConvertToRadians(ROTATION_DISTANCE * dy));
+	camera_->RotateY(XMConvertToRadians(ROTATION_DISTANCE * dx));
+}

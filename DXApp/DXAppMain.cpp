@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "DXAppMain.h"
 #include "Engine.h"
+#include <sstream>
 
 using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::ApplicationModel::Core;
@@ -16,6 +17,7 @@ void DXApp::Initialize(CoreApplicationView^ applicationView)
 		<CoreApplicationView^, IActivatedEventArgs^>(this, &DXApp::OnActivated);
 
 	windowClosed_ = false;
+	pointerPressed_ = false;
 }
 
 void DXApp::SetWindow(CoreWindow^ window)
@@ -25,6 +27,15 @@ void DXApp::SetWindow(CoreWindow^ window)
 
 	window->PointerWheelChanged += ref new TypedEventHandler
 		<CoreWindow^, PointerEventArgs^>(this, &DXApp::OnPointerWheelChanged);
+
+	window->PointerPressed += ref new TypedEventHandler
+		<CoreWindow^, PointerEventArgs^>(this, &DXApp::OnPointerPressed);
+
+	window->PointerReleased += ref new TypedEventHandler
+		<CoreWindow^, PointerEventArgs^>(this, &DXApp::OnPointerReleased);
+
+	window->PointerMoved += ref new TypedEventHandler
+		<CoreWindow^, PointerEventArgs^>(this, &DXApp::OnPointerMoved);
 
 	window->Closed += ref new TypedEventHandler
 		<CoreWindow^, CoreWindowEventArgs^>(this, &DXApp::Closed);
@@ -90,6 +101,38 @@ void DXApp::OnPointerWheelChanged(CoreWindow^ window, PointerEventArgs^ args)
 	else // wheelData < 0
 	{
 		engine_.MoveCamera(Engine::MoveDirection::Backward);
+	}
+}
+
+void DXApp::OnPointerPressed(CoreWindow^ window, PointerEventArgs^ args)
+{
+	auto point = args->CurrentPoint;
+	if (point->Properties->IsLeftButtonPressed)
+	{
+		lastPointerPosX_ = point->Position.X;
+		lastPointerPosY_ = point->Position.Y;
+		pointerPressed_ = true;
+	}
+}
+
+void DXApp::OnPointerReleased(CoreWindow^ window, PointerEventArgs^ args)
+{
+	pointerPressed_ = false;
+}
+
+void DXApp::OnPointerMoved(CoreWindow^ window, PointerEventArgs^ args)
+{
+	if (pointerPressed_)
+	{
+		auto pos = args->CurrentPoint->Position;
+		auto dx = pos.X - lastPointerPosX_;
+		auto dy = pos.Y - lastPointerPosY_;
+
+		// rotate the camera
+		engine_.RotateCamera(dx, dy);
+
+		lastPointerPosX_ = pos.X;
+		lastPointerPosY_ = pos.Y;
 	}
 }
 

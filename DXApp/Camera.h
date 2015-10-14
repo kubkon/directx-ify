@@ -26,6 +26,10 @@ public:
 	// strafe camera a distance
 	void Strafe(float);
 
+	void Pitch(float);
+
+	void RotateY(float);
+
 private:
 	Camera();
 

@@ -24,6 +24,7 @@ public:
 		Left, Right
 	};
 	const float MOVE_DISTANCE = 0.5f;
+	const float ROTATION_DISTANCE = 0.25f;
 
 	void Initialize();
 	void Update();
@@ -33,6 +34,7 @@ public:
 	void SetWorldMatrix(float, float, float);
 
 	void MoveCamera(MoveDirection);
+	void RotateCamera(float, float);
 
 private:
 	void InitGraphics();

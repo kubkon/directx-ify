@@ -99,3 +99,18 @@ void Camera::Strafe(float dist)
 	XMVECTOR positionV = XMLoadFloat3(&position_);
 	XMStoreFloat3(&position_, XMVectorMultiplyAdd(distV, rightV, positionV));
 }
+
+void Camera::Pitch(float angle)
+{
+	XMMATRIX rotationM = XMMatrixRotationAxis(XMLoadFloat3(&right_), angle);
+	XMStoreFloat3(&up_, XMVector3TransformNormal(XMLoadFloat3(&up_), rotationM));
+	XMStoreFloat3(&look_, XMVector3TransformNormal(XMLoadFloat3(&look_), rotationM));
+}
+
+void Camera::RotateY(float angle)
+{
+	XMMATRIX rotationM = XMMatrixRotationY(angle);
+	XMStoreFloat3(&right_, XMVector3TransformNormal(XMLoadFloat3(&right_), rotationM));
+	XMStoreFloat3(&up_, XMVector3TransformNormal(XMLoadFloat3(&up_), rotationM));
+	XMStoreFloat3(&look_, XMVector3TransformNormal(XMLoadFloat3(&look_), rotationM));
+}
