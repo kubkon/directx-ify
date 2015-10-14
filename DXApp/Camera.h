@@ -23,6 +23,9 @@ public:
 	// walk camera a distance
 	void Walk(float);
 
+	// strafe camera a distance
+	void Strafe(float);
+
 private:
 	Camera();
 

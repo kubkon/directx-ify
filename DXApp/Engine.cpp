@@ -156,4 +156,12 @@ void Engine::MoveCamera(MoveDirection direction)
 	{
 		camera_->Walk(MOVE_DISTANCE * -1.0f);
 	}
+	else if (direction == MoveDirection::Left)
+	{
+		camera_->Strafe(MOVE_DISTANCE * -1.0f);
+	}
+	else // direction == MoveDirection::Right
+	{
+		camera_->Strafe(MOVE_DISTANCE);
+	}
 }

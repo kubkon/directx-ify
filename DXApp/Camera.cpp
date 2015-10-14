@@ -91,3 +91,11 @@ void Camera::Walk(float dist)
 	XMVECTOR positionV = XMLoadFloat3(&position_);
 	XMStoreFloat3(&position_, XMVectorMultiplyAdd(distV, lookV, positionV));
 }
+
+void Camera::Strafe(float dist)
+{
+	XMVECTOR distV = XMVectorReplicate(dist);
+	XMVECTOR rightV = XMLoadFloat3(&right_);
+	XMVECTOR positionV = XMLoadFloat3(&position_);
+	XMStoreFloat3(&position_, XMVectorMultiplyAdd(distV, rightV, positionV));
+}
