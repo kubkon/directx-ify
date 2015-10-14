@@ -93,7 +93,11 @@ void Engine::Initialize()
 void Engine::Update()
 {
 	time_ += 0.5f;
+	// update world matrix
 	SetWorldMatrix(0.0f, XMConvertToRadians(time_), 0.0f);
+
+	// update view matrix
+	camera_->UpdateViewMatrix();
 }
 
 void Engine::Render()
@@ -140,4 +144,16 @@ void Engine::SetWorldMatrix(float roll, float pitch, float yaw)
 	world.r[2] *= -1.0f;
 
 	XMStoreFloat4x4(&world_, world);
+}
+
+void Engine::MoveCamera(MoveDirection direction)
+{
+	if (direction == MoveDirection::Forward)
+	{
+		camera_->Walk(MOVE_DISTANCE);
+	}
+	else if (direction == MoveDirection::Backward)
+	{
+		camera_->Walk(MOVE_DISTANCE * -1.0f);
+	}
 }

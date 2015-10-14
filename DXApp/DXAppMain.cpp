@@ -59,6 +59,14 @@ void DXApp::OnKeyDown(CoreWindow^ window, KeyEventArgs^ args)
 	{
 		Closed(window, nullptr);
 	}
+	else if (args->VirtualKey == VirtualKey::W)
+	{
+		engine_.MoveCamera(Engine::MoveDirection::Forward);
+	}
+	else if (args->VirtualKey == VirtualKey::S)
+	{
+		engine_.MoveCamera(Engine::MoveDirection::Backward);
+	}
 }
 
 void DXApp::Closed(CoreWindow^ window, CoreWindowEventArgs^ args)

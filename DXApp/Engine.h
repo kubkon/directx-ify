@@ -18,12 +18,21 @@ struct VERTEX
 class Engine
 {
 public:
+	enum class MoveDirection
+	{
+		Forward, Backward,
+		Left, Right
+	};
+	const float MOVE_DISTANCE = 0.5f;
+
 	void Initialize();
 	void Update();
 	void Render();
 
 	XMMATRIX World() const;
 	void SetWorldMatrix(float, float, float);
+
+	void MoveCamera(MoveDirection);
 
 private:
 	void InitGraphics();
