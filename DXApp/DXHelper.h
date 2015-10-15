@@ -3,7 +3,7 @@
 
 using namespace Platform;
 
-namespace DXHelper
+namespace MAPS
 {
 	inline void OutputDebug(Platform::String^ msg)
 	{

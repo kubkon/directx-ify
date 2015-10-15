@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Camera.h"
 
+using namespace MAPS;
+
 Camera::Camera()
 	: position_(0.0f, 0.0f, 0.0f),
 	  right_(1.0f, 0.0f, 0.0f),

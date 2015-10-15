@@ -10,6 +10,7 @@ using namespace Windows::UI::Core;
 using namespace Windows::UI::Popups;
 using namespace Windows::System;
 using namespace Platform;
+using namespace MAPS;
 
 void DXApp::Initialize(CoreApplicationView^ applicationView)
 {

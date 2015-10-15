@@ -2,7 +2,7 @@
 #include "Engine.h"
 #include "DXHelper.h"
 
-using DXHelper::ThrowIfFailed;
+using namespace MAPS;
 
 void Engine::Initialize()
 {
@@ -85,17 +85,10 @@ void Engine::Initialize()
 
 	// initialise world transform
 	SetWorldMatrix(0.0f, 0.0f, 0.0f);
-
-	// initialise time
-	time_ = 0.0f;
 }
 
 void Engine::Update()
 {
-	time_ += 0.5f;
-	// update world matrix
-	SetWorldMatrix(0.0f, XMConvertToRadians(time_), 0.0f);
-
 	// update view matrix
 	camera_->UpdateViewMatrix();
 }
