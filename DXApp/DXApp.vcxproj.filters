@@ -32,26 +32,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="DXAppMain.cpp" />
-    <ClCompile Include="Engine.cpp">
+    <ClCompile Include="Src\Camera.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="Src\Engine.cpp">
       <Filter>Content</Filter>
     </ClCompile>
+    <ClCompile Include="Src\DXAppMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Engine.h">
-      <Filter>Content</Filter>
-    </ClInclude>
-    <ClInclude Include="DXHelper.h">
+    <ClInclude Include="Inc\Helpers.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="DXAppMain.h" />
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Inc\Camera.h">
       <Filter>Content</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Engine.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DXAppMain.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">

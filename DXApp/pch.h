@@ -13,3 +13,4 @@
 #include <agile.h>
 #include <concrt.h>
 #include <string>
+#include "Helpers.h"

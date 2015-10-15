@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Engine.h"
-#include "DXHelper.h"
 
 using namespace MAPS;
 
