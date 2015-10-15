@@ -30,7 +30,7 @@ namespace MAPS
             std::vector<VertexPositionNormal>& vertices,
             std::vector<uint16_t>& indices);
 
-        std::shared_ptr<Model> model_;
+        std::unique_ptr<Model> model_;
         XMFLOAT4X4 world_;
 
         ID3D11Device* d3d11Device_;

@@ -129,7 +129,7 @@ void Scene::LoadMeshFromSTLFile(const wchar_t* fileName, char mode)
     BoundingBox::CreateFromPoints(mesh->boundingBox, numVertices, &verts->position, sizeof(VertexPositionNormal));
     mesh->meshParts.emplace_back(part);
 
-    model_ = std::make_shared<Model>();
+    model_ = std::make_unique<Model>();
     model_->meshes.emplace_back(mesh);
 }
 
