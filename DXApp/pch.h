@@ -13,4 +13,8 @@
 #include <agile.h>
 #include <concrt.h>
 #include <string>
+#include "boost/algorithm/string.hpp"
+#include "boost/lexical_cast.hpp"
+#include <vector>
+#include <fstream>
 #include "Helpers.h"

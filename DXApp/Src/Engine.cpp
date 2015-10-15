@@ -70,8 +70,9 @@ void Engine::Initialize()
 	viewport.Height = window->Bounds.Height;
 	devContext_->RSSetViewports(1, &viewport);
 
-	// initialise graphics
-	InitGraphics();
+	// initialise scene
+	scene_ = Scene::CreateScene(device_.Get(), devContext_.Get());
+	scene_->LoadMeshFromSTLFile(L"torus.stl");
 
 	// initialise camera
 	camera_ = Camera::CreateCamera();
@@ -81,14 +82,11 @@ void Engine::Initialize()
 		1.0f,
 		1000.0f);
 	camera_->UpdateViewMatrix();
-
-	// initialise world transform
-	SetWorldMatrix(0.0f, 0.0f, 0.0f);
 }
 
 void Engine::Update()
 {
-	// update view matrix
+	// update camera's view matrix
 	camera_->UpdateViewMatrix();
 }
 
@@ -101,42 +99,12 @@ void Engine::Render()
 	devContext_->ClearRenderTargetView(renderTarget_.Get(), colour);
 
 	// draw...
-	CommonStates states(device_.Get());
-	model_->Draw(
-		devContext_.Get(),
-		states,
-		World(),
-		camera_->View(),
-		camera_->Proj(),
-		true);
+	scene_->Draw(camera_->View(), camera_->Proj());
 
 	// switch the buffers
 	ThrowIfFailed(swapChain_->Present(1, 0));
 }
 
-void Engine::InitGraphics()
-{
-	// here, we are going to read in the STL file
-	model_ = Model::CreateFromSTL(device_.Get(), "torus.stl");
-}
-
-XMMATRIX Engine::World() const
-{
-	return XMLoadFloat4x4(&world_);
-}
-
-void Engine::SetWorldMatrix(float roll, float pitch, float yaw)
-{
-	XMMATRIX scale, rotate, world;
-	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	rotate = XMMatrixRotationRollPitchYaw(roll, pitch, yaw);
-
-	// adjust for RH model
-	world = scale * rotate;
-	world.r[2] *= -1.0f;
-
-	XMStoreFloat4x4(&world_, world);
-}
 
 void Engine::MoveCamera(MoveDirection direction)
 {

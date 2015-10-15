@@ -1,8 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Camera.h"
-#include "Model.h"
-#include "CommonStates.h"
+#include "Scene.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -32,16 +31,11 @@ namespace MAPS
 		void Update();
 		void Render();
 
-		XMMATRIX World() const;
-		void SetWorldMatrix(float, float, float);
-
 		void MoveCamera(MoveDirection);
 		void RotateCamera(float, float);
 
 	private:
-		void InitGraphics();
-
-		std::unique_ptr<Model> model_;
+		std::unique_ptr<Scene> scene_;
 		std::unique_ptr<Camera> camera_;
 		XMFLOAT4X4 world_;
 

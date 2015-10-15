@@ -143,7 +143,8 @@
       <AdditionalIncludeDirectories>$(BOOST)\include\boost-1_59;$(SolutionDir)\DirectXMesh\DirectXMesh;$(SolutionDir)\DirectXTK\Inc;$(ProjectDir)\Inc;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -157,7 +158,8 @@
       <AdditionalIncludeDirectories>$(BOOST)\include\boost-1_59;$(SolutionDir)\DirectXMesh\DirectXMesh;$(SolutionDir)\DirectXTK\Inc;$(ProjectDir)\Inc;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -202,6 +204,7 @@
     <ClInclude Include="Inc\DXAppMain.h" />
     <ClInclude Include="Inc\Engine.h" />
     <ClInclude Include="Inc\Helpers.h" />
+    <ClInclude Include="Inc\Scene.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +219,7 @@
     <ClCompile Include="Src\Camera.cpp" />
     <ClCompile Include="Src\DXAppMain.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
+    <ClCompile Include="Src\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

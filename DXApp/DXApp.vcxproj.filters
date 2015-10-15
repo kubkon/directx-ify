@@ -39,6 +39,9 @@
       <Filter>Content</Filter>
     </ClCompile>
     <ClCompile Include="Src\DXAppMain.cpp" />
+    <ClCompile Include="Src\Scene.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -52,6 +55,9 @@
       <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="Inc\DXAppMain.h" />
+    <ClInclude Include="Inc\Scene.h">
+      <Filter>Content</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
