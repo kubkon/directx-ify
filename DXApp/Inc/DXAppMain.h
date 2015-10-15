@@ -10,36 +10,36 @@ using namespace Platform;
 
 namespace MAPS
 {
-	ref class DXApp sealed : public IFrameworkView
-	{
-	public:
-		virtual void Initialize(CoreApplicationView^);
-		virtual void SetWindow(CoreWindow^);
-		virtual void Load(String^);
-		virtual void Run();
-		virtual void Uninitialize();
-		void OnActivated(CoreApplicationView^, IActivatedEventArgs^);
-		void OnKeyDown(CoreWindow^, KeyEventArgs^);
-		void OnPointerWheelChanged(CoreWindow^, PointerEventArgs^);
-		void OnPointerPressed(CoreWindow^, PointerEventArgs^);
-		void OnPointerReleased(CoreWindow^, PointerEventArgs^);
-		void OnPointerMoved(CoreWindow^, PointerEventArgs^);
-		void Closed(CoreWindow^, CoreWindowEventArgs^);
+    ref class DXApp sealed : public IFrameworkView
+    {
+    public:
+        virtual void Initialize(CoreApplicationView^);
+        virtual void SetWindow(CoreWindow^);
+        virtual void Load(String^);
+        virtual void Run();
+        virtual void Uninitialize();
+        void OnActivated(CoreApplicationView^, IActivatedEventArgs^);
+        void OnKeyDown(CoreWindow^, KeyEventArgs^);
+        void OnPointerWheelChanged(CoreWindow^, PointerEventArgs^);
+        void OnPointerPressed(CoreWindow^, PointerEventArgs^);
+        void OnPointerReleased(CoreWindow^, PointerEventArgs^);
+        void OnPointerMoved(CoreWindow^, PointerEventArgs^);
+        void Closed(CoreWindow^, CoreWindowEventArgs^);
 
-	private:
-		bool windowClosed_;
-		bool pointerPressed_;
-		float lastPointerPosX_;
-		float lastPointerPosY_;
-		Engine engine_;
-	};
+    private:
+        bool windowClosed_;
+        bool pointerPressed_;
+        float lastPointerPosX_;
+        float lastPointerPosY_;
+        Engine engine_;
+    };
 
-	ref class DXAppSource sealed : IFrameworkViewSource
-	{
-	public:
-		inline virtual IFrameworkView^ CreateView()
-		{
-			return ref new DXApp();
-		}
-	};
+    ref class DXAppSource sealed : IFrameworkViewSource
+    {
+    public:
+        inline virtual IFrameworkView^ CreateView()
+        {
+            return ref new DXApp();
+        }
+    };
 };
