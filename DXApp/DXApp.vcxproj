@@ -224,10 +224,6 @@
     <None Include="DXApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectXMesh\DirectXMesh\DirectXMesh_Windows10.vcxproj">
-      <Project>{107a408e-c148-4594-b469-075fe0adb7a5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\DirectXTK\DirectXTK_Windows10.vcxproj">
       <Project>{f4776924-619c-42c7-88b2-82c947ccc9e7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
